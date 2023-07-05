@@ -16,11 +16,11 @@ https://www.raspberrypi.com/documentation/computers/linux_kernel.html
   ```
   sudo apt install git bc bison flex libssl-dev make
   ```
-  -- 특정 버전을 사용할 경우 다음과 같이 특정 버전의 브랜치를 설정하여 내려 받는다.
+-- 특정 버전을 사용할 경우 다음과 같이 특정 버전의 브랜치를 설정하여 내려 받는다.
   ```
   git clone --depth=1 --branch <branch> https://github.com/raspberrypi/linux
   ```
-  --- 예) 4.19 버전의 경우
+--- 예) 4.19 버전의 경우
     ```
     git clone --depth=1 --branch rpi-4.19.y https://github.com/raspberrypi/linux
     ```
