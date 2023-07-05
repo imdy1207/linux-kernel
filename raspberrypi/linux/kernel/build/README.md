@@ -23,7 +23,7 @@ https://www.raspberrypi.com/documentation/computers/linux_kernel.html
     - 예) 4.19 버전의 경우
       ```Bash
       git clone --depth=1 --branch rpi-4.19.y https://github.com/raspberrypi/linux
-      ```Bash
+      ```
 ### Configuration
 - 각각의 환경변수들에 라즈베리파이의 버전과 비트수에 따라 알맞은 값으로 설정해 준다.
 #### 32bit
