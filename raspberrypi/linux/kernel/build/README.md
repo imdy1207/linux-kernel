@@ -32,7 +32,7 @@ https://www.raspberrypi.com/documentation/computers/linux_kernel.html
   cd linux
   KERNEL=kernel
   make bcmrpi_defconfig
-  ```Shell
+  ```
 - Raspberry Pi 2, 3, 3+ and Zero 2 W, and Raspberry Pi Compute Modules 3 and 3+ default 32-bit
   ```Shell
   cd linux
