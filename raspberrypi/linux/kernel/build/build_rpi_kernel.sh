@@ -15,5 +15,5 @@ cd linux
 echo "make defconfig"
 make O=$OUTPUT bcm2711_defconfig
 
-o "kernel build"
+echo "kernel build"
 make O=$OUTPUT Image.gz modules dtbs -j4 2>&1 | tee $BUILD_LOG
