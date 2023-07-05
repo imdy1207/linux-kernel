@@ -7,7 +7,11 @@ https://www.raspberrypi.com/documentation/computers/linux_kernel.html
 #### 2.2.3 라즈비안 리눅스 커널 빌드
 53 pages
 ## Description
-### dependencies
+### Environment
+- Raspberry Pi 4 6.1.21-v8
+- RAM 4GB
+- 32-bit or 64-bit
+### Dependencies
 - 빌드에 필요한 도구, 라이브러리 등을 설치한다.
   ```
   sudo apt install git bc bison flex libssl-dev make
