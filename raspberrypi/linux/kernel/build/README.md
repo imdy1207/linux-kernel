@@ -1,4 +1,4 @@
-# Raspbian Linux Kernel Build
+# Raspbian Linux Kernel Build & Install
 ## Reference
 ### Raspberri Pi Documentation
 #### The Linux kernel
@@ -18,7 +18,7 @@ https://www.raspberrypi.com/documentation/computers/linux_kernel.html
   ```
 - 리눅스 소스코드를 내려 받는다.
   ```
-  sudo apt install git bc bison flex libssl-dev make
+  git clone --depth=1 https://github.com/raspberrypi/linux
   ```
   - 특정 버전을 사용할 경우 다음과 같이 특정 버전의 브랜치를 설정하여 내려 받는다.
     ```Bash
