@@ -56,3 +56,19 @@ https://www.raspberrypi.com/documentation/computers/linux_kernel.html
   KERNEL=kernel8
   make bcm2711_defconfig
   ```
+### Kernel Build
+```Shell
+./build_rpi_kernel.sh
+```
+### Kernel Install
+```Shell
+./install_rpi_kernel_img.sh
+```
+### Extracting Preprocess File
+```Shell
+./build_preprocess_rpi_kernel.sh [file_name.i]
+```
+- example
+	```Shell
+	./build_preprocess_rpi_kernel.sh kernel/sched/core.i
+	```
