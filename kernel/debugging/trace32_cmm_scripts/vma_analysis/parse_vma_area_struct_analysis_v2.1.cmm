@@ -1,0 +1,285 @@
+;****************************************************************************
+;**         parse_vma_area_struct_v1.0.cmm
+;**
+;**         This cmm file is designed to parse vma_area_struct 
+;**
+;**
+;****************************************************************************
+
+B::
+
+area
+area.reset
+
+//ENTRY &TASK_STRUCT_ADDRESS 
+&TASK_STRUCT_ADDRESS=0xffffff805d66dac0
+
+//OPEN #1 "vma_area_struct_list.txt" /Create /Write
+
+Global &g_task_struct_mm_addr
+Global &g_task_struct_mm_offset
+
+Global &g_vma_area_struct_addr
+Global &g_vma_area_struct_val
+
+;values
+Global &g_Vma_addr
+Global &g_Vm_start
+Global &g_Vm_end
+Global &g_Vm_next
+Global &g_Vm_prev
+
+GLOBAL &g_task_pid
+
+GLOBAL &g_Vm_mm
+GLOBAL &g_Vm_flags
+GLOBAL &g_Vm_count
+GLOBAL &g_Vm_size
+GLOBAL &g_total_Vm_size
+GLOBAL &g_Vm_memory_segment_type
+
+GLOBAL &g_Mm_users
+GLOBAL &g_Mm_count
+GLOBAL &g_Mm_total_vm
+GLOBAL &g_Mm_map_count
+GLOBAL &g_Mm_task_size
+GLOBAL &g_Mm_owner
+GLOBAL &g_Mm_stack_start
+GLOBAL &g_Mm_heap_start
+GLOBAL &g_Mm_heap_end
+GLOBAL &g_Mm_data_start
+GLOBAL &g_Mm_data_end
+GLOBAL &g_Mm_code_start
+GLOBAL &g_Mm_code_end
+
+GLOBAL &max_vm_size
+GLOBAL &max_vm_addr
+GLOBAL &min_vm_size
+GLOBAL &min_vm_addr
+
+;offsets
+GLOBAL &g_task_struct_pid_offset
+
+Global &g_Vm_start_offset
+Global &g_Vm_end_offset
+Global &g_Vm_next_offset
+Global &g_Vm_prev_offset
+GLOBAL &g_Vm_flags_offset
+GLOBAL &g_Vm_mm_offset
+
+GLOBAL &g_Mm_users_offset
+GLOBAL &g_Mm_count_offset
+GLOBAL &g_Mm_total_vm_offset
+GLOBAL &g_Mm_map_count_offset
+GLOBAL &g_Mm_task_size_offset
+GLOBAL &g_Mm_owner_offset
+GLOBAL &g_Mm_stack_start_offset
+GLOBAL &g_Mm_heap_start_offset
+GLOBAL &g_Mm_heap_end_offset
+GLOBAL &g_Mm_data_start_offset
+GLOBAL &g_Mm_data_end_offset
+GLOBAL &g_Mm_code_start_offset
+GLOBAL &g_Mm_code_end_offset
+
+;addresses
+GLOBAL &g_Mm_users_addr
+GLOBAL &g_Mm_count_addr
+GLOBAL &g_Mm_total_vm_addr
+GLOBAL &g_Mm_map_count_addr
+GLOBAL &g_Mm_task_size_addr
+
+; check the offset
+&g_task_struct_pid_offset=address.offset(v.address(((struct task_struct)0x0).pid))
+
+&g_task_struct_mm_offset=address.offset(v.address(((struct task_struct)0x0).mm))
+&g_Vm_mm_offset=address.offset(v.address(((struct vm_area_struct)0x0).vm_mm))
+
+&g_Vm_start_offset=address.offset(v.address(((struct vm_area_struct)0x0).vm_start))
+&g_Vm_end_offset=address.offset(v.address(((struct vm_area_struct)0x0).vm_end))
+&g_Vm_next_offset=address.offset(v.address(((struct vm_area_struct)0x0).vm_next))
+&g_Vm_prev_offset=address.offset(v.address(((struct vm_area_struct)0x0).vm_prev))
+
+&g_Vm_flags_offset=address.offset(v.address(((struct vm_area_struct)0x0).vm_flags))
+
+// 아래 함수를 호출하면 &g_Vma_addr에 주소가 설정됨 
+gosub configure_vm_area_struct &TASK_STRUCT_ADDRESS
+
+// vm_area_struct을 파싱하는 핵심 루틴 
+gosub parse_vm_area_struct 
+
+//CLOSE #1
+ENDDO
+
+; *************************************************************************
+; parse_vm_area_struct
+;
+; *************************************************************************
+parse_vm_area_struct:
+
+;&g_task_struct_mm=
+
+
+&g_Vm_count=0.
+&g_total_Vm_size=0
+&max_vm_size=0
+&min_vm_size=0
+
+//&g_task_pid=data.long(d:(&TASK_STRUCT_ADDRESS+&g_task_struct_pid_offset))
+
+&g_Vm_mm=data.quad(d:(&g_Vma_addr+&g_Vm_mm_offset))
+
+&g_Mm_users_offset=address.offset(v.address(((struct mm_struct)0x0).mm_users))
+&g_Mm_users_addr=&g_Vm_mm+&g_Mm_users_offset
+&g_Mm_users=data.long(d:&g_Mm_users_addr)
+
+&g_Mm_count_offset=address.offset(v.address(((struct mm_struct)0x0).mm_count))
+&g_Mm_count_addr=&g_Vm_mm+&g_Mm_count_offset
+&g_Mm_count=data.long(d:&g_Mm_count_addr)
+
+&g_Mm_total_vm_offset=address.offset(v.address(((struct mm_struct)0x0).total_vm))
+&g_Mm_total_vm_addr=&g_Vm_mm+&g_Mm_total_vm_offset
+&g_Mm_total_vm=data.long(d:&g_Mm_total_vm_addr)
+
+&g_Mm_map_count_offset=address.offset(v.address(((struct mm_struct)0x0).map_count))
+&g_Mm_map_count_addr=&g_Vm_mm+&g_Mm_map_count_offset
+&g_Mm_map_count=data.long(d:&g_Mm_map_count_addr)
+
+&g_Mm_task_size_offset=address.offset(v.address(((struct mm_struct)0x0).task_size))
+&g_Mm_task_size_addr=&g_Vm_mm+&g_Mm_task_size_offset
+&g_Mm_task_size=data.long(d:&g_Mm_task_size_addr)
+
+&g_Mm_stack_start_offset=address.offset(v.address(((struct mm_struct)0x0).start_stack))
+&g_Mm_stack_start=data.long(d:(&g_Vm_mm+&g_Mm_stack_start_offset))
+
+&g_Mm_heap_start_offset=address.offset(v.address(((struct mm_struct)0x0).start_brk))
+&g_Mm_heap_start=data.long(d:(&g_Vm_mm+&g_Mm_heap_start_offset))
+&g_Mm_heap_end_offset=address.offset(v.address(((struct mm_struct)0x0).brk))
+&g_Mm_heap_end=data.long(d:(&g_Vm_mm+&g_Mm_heap_end_offset))
+
+&g_Mm_data_start_offset=address.offset(v.address(((struct mm_struct)0x0).start_data))
+&g_Mm_data_start=data.long(d:(&g_Vm_mm+&g_Mm_data_start_offset))
+&g_Mm_data_end_offset=address.offset(v.address(((struct mm_struct)0x0).end_data))
+&g_Mm_data_end=data.long(d:(&g_Vm_mm+&g_Mm_data_end_offset))
+
+&g_Mm_code_start_offset=address.offset(v.address(((struct mm_struct)0x0).start_code))
+&g_Mm_code_start=data.long(d:(&g_Vm_mm+&g_Mm_code_start_offset))
+&g_Mm_code_end_offset=address.offset(v.address(((struct mm_struct)0x0).end_code))
+&g_Mm_code_end=data.long(d:(&g_Vm_mm+&g_Mm_code_end_offset))
+
+&g_Mm_owner_offset=address.offset(v.address(((struct mm_struct)0x0).owner))
+&g_Mm_owner=data.quad(d:(&g_Vm_mm+&g_Mm_owner_offset))
+&g_task_pid=data.long(d:(&g_Mm_owner+&g_task_struct_pid_offset))
+
+// 파싱된 메시지 출력
+print "  [start]	"
+
+print "     vm_start            vm_end              vm_next             vm_prev            vm_flags      seg_type       vm_size(Byte)"
+//WRITE #1 "vm_start             vm_end                vm_next              vm_prev"
+
+while &g_Vma_addr!=0x0
+(
+  &g_Vm_memory_segment_type="  -  "
+
+  &Vm_start=data.quad(d:(&g_Vma_addr+&g_Vm_start_offset))
+  &g_Vm_end=data.quad(d:(&g_Vma_addr+&g_Vm_end_offset))
+  &g_Vm_next=data.quad(d:(&g_Vma_addr+&g_Vm_next_offset))
+  &g_Vm_prev=data.quad(d:(&g_Vma_addr+&g_Vm_prev_offset))
+
+  &g_Vm_flags=data.quad(d:(&g_Vma_addr+&g_Vm_flags_offset))
+
+  &g_Vm_size=&g_Vm_end-&Vm_start
+  &g_total_Vm_size=&g_total_Vm_size+&g_Vm_size
+
+  // 최소값 초기화
+  if &g_Vm_count==0.
+  (
+    &min_vm_size=&g_Vm_size
+  )
+
+
+  // 최대값 비교
+  if &max_vm_size<&g_Vm_size
+  (
+    &max_vm_size=&g_Vm_size
+    &max_vm_addr=&Vm_start
+  )
+
+  // 최소값 비교
+  if &min_vm_size>&g_Vm_size
+  (
+    &min_vm_size=&g_Vm_size
+    &min_vm_addr=&Vm_start
+  )
+
+  if  (&g_Mm_code_start<=&Vm_start)&&(&g_Vm_end<=&g_Mm_code_end)
+  (
+    &g_Vm_memory_segment_type="CODE "
+  )
+  if  (&g_Mm_data_start<=&Vm_start)&&(&g_Vm_end<=&g_Mm_data_end)
+  (
+    &g_Vm_memory_segment_type="DATA "
+  )
+  if  (&g_Mm_heap_start<=&Vm_start)&&(&g_Vm_end<=&g_Mm_heap_end)
+  (
+    &g_Vm_memory_segment_type="HEAP "
+  )
+  if  (&g_Mm_heap_end<=&Vm_start)&&(&g_Vm_end<=&g_Mm_stack_start)
+  (
+    &g_Vm_memory_segment_type="STACK"
+  )
+
+  print "0x" format.hex(16.,&Vm_start) "  0x" format.hex(16.,&g_Vm_end) "  0x"  format.hex(16.,&g_Vm_next) "  0x" format.hex(16.,&g_Vm_prev) " 0x" format.hex(16.,&g_Vm_flags) "  &g_Vm_memory_segment_type    "  " "  format.decimal(0,&g_Vm_size)
+  //	WRITE #1 "0x" format.hex(16.,&Vm_start) "  0x" format.hex(16.,&g_Vm_end) "  0x"  format.hex(16.,&g_Vm_next) "  0x" format.hex(16.,&g_Vm_prev)
+
+  &g_Vma_addr=&g_Vm_next
+
+  &g_Vm_count=&g_Vm_count+1
+  ;	print "g_Vma_addr : " &g_Vma_addr
+
+)
+
+PRINT ""
+PRINT "PID : " format.decimal(0,&g_task_pid)
+PRINT "│"
+PRINT "└mm_struct"
+PRINT " ├MM Address : 0x" format.hex(16.,&g_Vm_mm)
+PRINT " │├ CODE : 0x" format.hex(16.,&g_Mm_code_start) " ~ 0x" format.hex(16.,&g_Mm_code_end)
+PRINT " │├ DATA : 0x" format.hex(16.,&g_Mm_data_start) " ~ 0x" format.hex(16.,&g_Mm_data_end)
+PRINT " │├ HEAP : 0x" format.hex(16.,&g_Mm_heap_start) " ~ 0x" format.hex(16.,&g_Mm_heap_end)
+PRINT " │└STACK : 0x" format.hex(16.,&g_Mm_stack_start) " ~"
+PRINT " ├MM Users : " format.decimal(0,&g_Mm_users)
+PRINT " ├MM Count : " format.decimal(0,&g_Mm_count)
+PRINT " ├MM Total VM : " format.decimal(0,&g_Mm_total_vm)
+PRINT " ├MM Map Count : " format.decimal(0,&g_Mm_map_count)
+PRINT " ├MM Task Size : " format.decimal(0,&g_Mm_task_size)
+PRINT " │"
+PRINT " └vm_area_struct"
+PRINT "  ├Total VM Count: " &g_Vm_count
+PRINT "  ├Total VM Size : " format.decimal(0, &g_total_Vm_size) " Byte"
+PRINT "  ├AVG VM Size : " format.decimal(0,&g_total_Vm_size/&g_Vm_count) " Byte"
+PRINT "  ├Min VM Size : " format.decimal(0, &min_vm_size) " Byte (0x" &min_vm_addr ")"
+PRINT "  └Max VM Size : " format.decimal(0, &max_vm_size) " Byte (0x" &max_vm_addr ")"
+
+
+RETURN 
+
+; *************************************************************************
+; configure_vm_area_struct
+;
+; *************************************************************************
+configure_vm_area_struct:
+  entry &cur_task_struct_address
+  LOCAL &task_struct_addr &mm_struct_addr &mm_struct_val &vm_area_struct_addr &vm_area_struct_val
+
+  &task_struct_addr=&cur_task_struct_address
+  
+  &mm_struct_addr=&task_struct_addr+&g_task_struct_mm_offset
+  &mm_struct_val=data.quad(d:&mm_struct_addr)
+  
+  &g_Vma_addr=data.quad(d:&mm_struct_val)
+
+  PRINT "PID : " format.decimal(0,data.long(d:&task_struct_addr+&g_task_struct_pid_offset))
+  PRINT "MM ADDRESS : 0x" format.hex(16.,data.quad(d:&mm_struct_addr))
+  PRINT ""
+  
+RETURN
